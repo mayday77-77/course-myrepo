@@ -7,7 +7,7 @@ WORKDIR /app
 # add files
 ADD package.json .
 ADD main.js .
-ADD package-lock.json
+ADD package-lock.json .
 ADD views views
 ADD public public
 
