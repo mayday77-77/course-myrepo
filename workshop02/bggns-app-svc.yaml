@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dov-bear-service
-  namespace: vader
+  name: bggdb-app-svc
+  namespace: bggns
 spec:
+  type: LoadBalancer
   selector:
-    app: dov-bear
+    app: bggns-app
   ports:
     - protocol: TCP
       port: 80

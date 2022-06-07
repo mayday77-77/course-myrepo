@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bggns-db-deployment
+  namespace: bggns
+  labels:
+    name: bggns-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bggns-db
+  template:
+    metadata:
+      labels:
+        app: bggns-db
+    spec:
+      containers:
+      - name: bggns-db-container
+        imagePullPolicy: IfNotPresent
+        image: stackupiss/bgg-database:v1
+        ports:
+        - containerPort: 3306

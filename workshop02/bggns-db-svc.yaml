@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bggns-db-svc
+  namespace: bggns
+  labels:
+    name: bggns-db-svc
+spec:
+  selector:
+    app: bggns-db
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306

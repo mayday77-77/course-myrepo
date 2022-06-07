@@ -23,4 +23,9 @@ spec:
         envFrom:
         - secretRef:
             name: dov-bear-secret
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+            scheme: HTTP
 
