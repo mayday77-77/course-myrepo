@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dov-bear-cm
+  namespace: vader
+data:
+  INSTANCE_NAME: "starwars cm"
