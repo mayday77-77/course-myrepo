@@ -17,6 +17,11 @@ spec:
     spec:
       containers:
       - name: dov-bear-container
+        volumeMounts:
+        - name: cm-vol
+          mountPath: /opt/configmaps/
+        - name: disk-vol
+          mountPath: /opt/newvol
         image: ghcr.io/mayday77-77/dov-bear:v1
         ports:
         - containerPort: 3000
@@ -25,4 +30,11 @@ spec:
             path: /healthz
             port: 3000
             scheme: HTTP
+      volumes:
+      - name: cm-vol
+        configMap:
+          name: dov-bear-cm
+      - name: disk-vol
+        persistentVolumeClaim:
+          claimName: dov-bear-pvc
 
