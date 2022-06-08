@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dov-bear-ingress
+  namespace: dov-bear
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  defaultBackend:
+    service:
+      name: dov-bear-svc
+      port:
+        number: 80
+  rules:
+  - host: dov-bear.167.172.5.254.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dov-bear-svc
+            port:
+              number: 80

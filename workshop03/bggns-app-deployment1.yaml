@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bggns-cm1
+  namespace: bggns
+data:
+  BGG_DB_USER: root
+  BGG_DB_HOST: bggns-db-svc
+  INSTANCE_NAME: "This is V1"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bggns-secret
+  namespace: bggns
+type: Opaque
+data:
+  BGG_DB_PASSWORD: Y2hhbmdlaXQ=
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bggdb-app-svc1
+  namespace: bggns
+spec:
+  selector:
+    app: bggns-app1
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bggns-app-deployment1
+  namespace: bggns
+  labels:
+    name: bggns-app-deployment1
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: bggns-app1
+  template:
+    metadata:
+      labels:
+        app: bggns-app1
+    spec:
+      containers:
+      - name: bggns-app-container1
+        imagePullPolicy: IfNotPresent
+        image: stackupiss/bgg-backend:v1
+        args: ["--prefix", "/v1"]
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: bggns-secret
+        - configMapRef:
+            name: bggns-cm1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+            scheme: HTTP
+
+
