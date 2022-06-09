@@ -1,10 +1,10 @@
 apiVersion: mysql.presslabs.org/v1alpha1
 kind: MysqlCluster
 metadata:
-  name: mysql-cluster 
+  name: mysql-cluster
   namespace: mysql-cluster
   labels:
-    name: mysql-cluster-db
+    name: mysql-cluster
 spec:
   replicas: 2
   secretName: myqsql-secret
