@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-db-pvc
+  name: wordpress-pvc
   namespace: wordpress
 spec:
   accessModes:
@@ -12,70 +12,73 @@ spec:
   storageClassName: do-block-storage
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-cm
+  namespace: wordpress
+data:
+  WORDPRESS_DB_HOST: mysql-db-svc
+  WORDPRESS_DB_USER: root
+  WORDPRESS_DB_NAME: mywordpress
+  WORDPRESS_TABLE_PREFIX: mywp
+---
+apiVersion: v1
 kind: Secret
 metadata:
-  name: mysql-db-secret
+  name: wordpress-secret
   namespace: wordpress
 type: Opaque
 data:
-  MYSQL_ROOT_PASSWORD: Y2hhbmdlaXQ=
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mysql-db-cm
-  namespace: wordpress
-data:
-  MYSQL_DATABASE: mywordpress
+  WORDPRESS_DB_PASSWORD: Y2hhbmdlaXQ=
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-db-svc
+  name: wordpress-svc
   namespace: wordpress
   labels:
-    name: mysql-db-svc
+    name: wordpress-svc
 spec:
   selector:
-    app: mysql-db
+    app: wordpress-deployment
   ports:
     - protocol: TCP
-      port: 3306
-      targetPort: 3306
+      port: 8080
+      targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql-db-deployment
+  name: wordpress-deployment
   namespace: wordpress
   labels:
-    name: mysql-db-deployment
+    name: wordpress-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql-db
+      app: wordpress-deployment
   template:
     metadata:
       labels:
-        app: mysql-db
+        app: wordpress-deployment
     spec:
       containers:
-      - name: mysql-db-container
+      - name: wordpress-container
         imagePullPolicy: IfNotPresent
-        image: mysql:latest
+        image: wordpress:latest
         envFrom:
         - secretRef:
-            name: mysql-db-secret
+            name: wordpress-secret
         - configMapRef:
-            name: mysql-db-cm
+            name: wordpress-cm
         volumeMounts:
-        - name: disk-vol
-          mountPath: /var/lib/mysql
+        - name: content-vol
+          mountPath: /var/www/html
         ports:
-        - containerPort: 3306
+        - containerPort: 80
       volumes:
-      - name: disk-vol
+      - name: content-vol
         persistentVolumeClaim:
-          claimName: mysql-db-pvc
+          claimName: wordpress-pvc
 ---
